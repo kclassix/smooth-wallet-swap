@@ -1,43 +1,32 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { 
-  configureChains, 
-  createConfig, 
-  WagmiConfig,
-  useAccount, 
-  useConnect, 
-  useDisconnect
-} from 'wagmi';
+import { createConfig } from 'wagmi';
 import { mainnet, sepolia } from 'wagmi/chains';
-import { InjectedConnector } from 'wagmi/connectors/injected';
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
-import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
-import { publicProvider } from 'wagmi/providers/public';
+import { 
+  injected,
+  metaMask,
+  walletConnect, 
+  coinbaseWallet
+} from 'wagmi/connectors';
+import { http } from 'wagmi/transports';
+import { WagmiProvider, useAccount, useConnect, useDisconnect } from 'wagmi';
 import { useToast } from '@/components/ui/use-toast';
 
 // Configure chains & providers
-const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [mainnet, sepolia],
-  [publicProvider()]
-);
-
-// Define the available wallet connectors
-const connectors = [
-  new InjectedConnector({ 
-    chains,
-    options: {
+const config = createConfig({
+  chains: [mainnet, sepolia],
+  transports: {
+    [mainnet.id]: http(),
+    [sepolia.id]: http(),
+  },
+  connectors: [
+    injected({
       name: 'Browser Wallet',
-    }
-  }),
-  new MetaMaskConnector({ 
-    chains,
-    options: {
+    }),
+    metaMask({
       shimDisconnect: true,
-    }
-  }),
-  new WalletConnectConnector({
-    chains,
-    options: {
+    }),
+    walletConnect({
       projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'default-project-id',
       metadata: {
         name: 'Multi Wallet Dapp',
@@ -45,23 +34,12 @@ const connectors = [
         url: window.location.origin,
         icons: [`${window.location.origin}/favicon.ico`],
       },
-    },
-  }),
-  new CoinbaseWalletConnector({
-    chains,
-    options: {
+    }),
+    coinbaseWallet({
       appName: 'Multi Wallet Dapp',
       appLogoUrl: `${window.location.origin}/favicon.ico`,
-    },
-  }),
-];
-
-// Create the Wagmi config
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient,
-  webSocketPublicClient,
+    }),
+  ],
 });
 
 // Wallet type definition
@@ -258,11 +236,11 @@ const WalletContextProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 // Provider component that wraps the internal provider with WagmiConfig
 export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <WagmiConfig config={wagmiConfig}>
+    <WagmiProvider config={config}>
       <WalletContextProvider>
         {children}
       </WalletContextProvider>
-    </WagmiConfig>
+    </WagmiProvider>
   );
 };
 
