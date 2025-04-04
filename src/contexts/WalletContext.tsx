@@ -233,7 +233,7 @@ const WalletContextProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   );
 };
 
-// Provider component that wraps the internal provider with WagmiConfig
+// Provider component that wraps the internal provider with WagmiProvider
 export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <WagmiProvider config={config}>
