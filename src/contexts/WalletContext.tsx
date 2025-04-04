@@ -8,7 +8,7 @@ import {
   walletConnect, 
   coinbaseWallet
 } from 'wagmi/connectors';
-import { http } from 'wagmi/transports';
+import { http } from 'wagmi';
 import { WagmiProvider, useAccount, useConnect, useDisconnect } from 'wagmi';
 import { useToast } from '@/components/ui/use-toast';
 
