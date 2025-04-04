@@ -1,8 +1,7 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   configureChains, 
-  createConfig as createWagmiConfig, 
+  createConfig, 
   WagmiConfig,
   useAccount, 
   useConnect, 
@@ -58,7 +57,7 @@ const connectors = [
 ];
 
 // Create the Wagmi config
-const wagmiConfig = createWagmiConfig({
+const wagmiConfig = createConfig({
   autoConnect: true,
   connectors,
   publicClient,
@@ -117,9 +116,6 @@ const WalletContextProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       
       // Connect using the selected connector
       await connect({ connector });
-      
-      // The account data will be updated via the useAccount hook
-      // which will call the handleAccountChange function
       
     } catch (error) {
       console.error('Failed to connect wallet:', error);
